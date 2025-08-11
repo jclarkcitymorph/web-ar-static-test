@@ -16,7 +16,10 @@
       <button id="dev-tools-show-hide-btn">Hide Dev Tools</button>
       <ul id="notice-board">
         <li id="notice-marker-found" data-status="bad">Marker Lost</li>
-        <li id="notice-marker-last-loc">Last Loc: -</li>
+        <li id="notice-marker-position">Pos: -</li>
+        <li id="notice-marker-rotation">Rot: -</li>
+        <li id="notice-marker-scale">Scl: -</li>
+        <li id="notice-fps-display">FPS: -</li>
       </ul>
       <button id="dev-tools-reset-btn">Reset</button>
     </div>
@@ -32,37 +35,81 @@
     </a-scene>
   </body>
   <script>
+    let markerFound = false;
     const marker = document.querySelector("#marker");
     const devTools = document.querySelector("#dev-tools");
     const devToolsShowHideBtn = document.querySelector("#dev-tools-show-hide-btn");
     const noticeBoard = document.querySelector("#notice-board");
     const noticeFoundMarker = document.querySelector("#notice-marker-found");
 
-    console.log({marker, devTools, devToolsShowHideBtn, noticeBoard, noticeFoundMarker})
+    const noticeMarkerPosition = document.querySelector("#notice-marker-position");
+    const noticeMarkerRotation = document.querySelector("#notice-marker-rotation");
+    const noticeMarkerScale = document.querySelector("#notice-marker-scale");
+    const noticeFpsDisplay = document.querySelector("#notice-fps-display");
 
-    if(marker && devTools && devToolsShowHideBtn && noticeBoard && noticeFoundMarker){
-      // Show Hide Button
-      devToolsShowHideBtn.addEventListener("click", ()=>{
-        console.log("clicked")
-        const showingStatus = devTools.getAttribute("data-show-status")
-        if(showingStatus === "showing"){
-          devTools.setAttribute("data-show-status", "hidden")
-          devToolsShowHideBtn.textContent = "Show Dev Tools"
-        }
-        else {
-          devTools.setAttribute("data-show-status", "showing")
-          devToolsShowHideBtn.textContent = "Hide Dev Tools"
-        }
-      })
-      // Marker Events
-      marker.addEventListener("markerFound", ()=>{
-        noticeFoundMarker.textContent = "Marker Found"
-        noticeFoundMarker.setAttribute('data-status', 'good')
-      })
-      marker.addEventListener("markerLost", ()=>{
-        noticeFoundMarker.textContent = "Marker Lost"
-        noticeFoundMarker.setAttribute('data-status', 'bad')
-      })
+    
+    // Show Hide Button
+    devToolsShowHideBtn.addEventListener("click", ()=>{
+      const showingStatus = devTools.getAttribute("data-show-status")
+      if(showingStatus === "showing"){
+        devTools.setAttribute("data-show-status", "hidden")
+        devToolsShowHideBtn.textContent = "Show Dev Tools"
+      }
+      else {
+        devTools.setAttribute("data-show-status", "showing")
+        devToolsShowHideBtn.textContent = "Hide Dev Tools"
+      }
+    })
+    // Marker Events
+    marker.addEventListener("markerFound", ()=>{
+      updateMarkerData();
+      noticeFoundMarker.textContent = "Marker Found"
+      noticeFoundMarker.setAttribute('data-status', 'good')
+      markerFound = true;
+    })
+    marker.addEventListener("markerLost", ()=>{
+      noticeFoundMarker.textContent = "Marker Lost"
+      noticeFoundMarker.setAttribute('data-status', 'bad')
+      markerFound = false;
+    })
+
+    function updateMarkerData(){
+      if(!markerFound) return;
+      const {position, rotation, scale} = marker.object3D;
+      // Position
+      noticeMarkerPosition.textContent = `Pos: {x: ${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}, z: ${position.z.toFixed(2)}}`
+      // Rotation
+      const rotX = (rotation.x * 180 / Math.PI).toFixed(1);
+      const rotY = (rotation.y * 180 / Math.PI).toFixed(1);
+      const rotZ = (rotation.z * 180 / Math.PI).toFixed(1);
+      noticeMarkerRotation.textContent = `Rot: {x: ${rotX}°, y: ${rotY}°, z: ${rotZ}°}`;
+      // Scale
+      noticeMarkerScale.textContent = `Scl: {x: ${scale.x.toFixed(2)}, y: ${scale.y.toFixed(2)}, z: ${scale.z.toFixed(2)}}`
+      
     }
+
+    // Create and Register Per Frame Updates
+    AFRAME.registerComponent('frame-updater', {
+      init: function(){
+        this.frameCount = 0;
+        this.lastTime = 0;
+        this.fps = 0;
+      },
+      tick: function(time, timeDelta) {
+        this.frameCount++;
+        if (time - this.lastTime >= 1000) {
+          this.fps = Math.round(this.frameCount * 1000 / (time - this.lastTime));
+          this.frameCount = 0;
+          this.lastTime = time;
+          noticeFpsDisplay.textContent = `FPS: ${this.fps}`;
+        }
+        if(markerFound){
+          updateMarkerData()
+        }
+      }
+    })
+    
+
+
   </script>
 </html>
