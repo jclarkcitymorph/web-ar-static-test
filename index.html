@@ -1,11 +1,11 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/web-ar-static-test/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + TS</title>
-    <link rel="stylesheet" crossorigin href="/web-ar-static-test/assets/index-CYMQolpa.css">
+    <link rel="stylesheet" crossorigin href="/web-ar-static-test/assets/index-DHYh7RDi.css">
   </head>
   <!-- A-Frame core -->
   <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
@@ -14,14 +14,31 @@
   <body>
     <div id="dev-tools" data-show-status="showing">
       <button id="dev-tools-show-hide-btn">Hide Dev Tools</button>
-      <ul id="notice-board">
-        <li id="notice-marker-found" data-status="bad">Marker Lost</li>
-        <li id="notice-marker-position">Pos: -</li>
-        <li id="notice-marker-rotation">Rot: -</li>
-        <li id="notice-marker-scale">Scl: -</li>
-        <li id="notice-fps-display">FPS: -</li>
-        <li id="notice-misc">Misc: -</li>
-      </ul>
+      <div id="notice-board-misc" class="notice-board-div">
+        <ul class="notice-board">
+          <li id="notice-marker-found" data-status="bad">Marker Lost</li>
+          <li id="notice-fps-display">FPS: -</li>
+        </ul>
+      </div>
+      <div id="notice-board-marker" class="notice-board-div">
+        <button id="notice-board-marker-show-hide-btn" class="show-hide-btn">
+          Marker
+        </button>
+        <ul class="notice-board" data-show-status="showing">
+          <li id="notice-marker-position">Pos: -</li>
+          <li id="notice-marker-rotation">Rot: -</li>
+          <li id="notice-marker-scale">Scl: -</li>
+        </ul>
+      </div>
+      <div id="notice-board-obj" class="notice-board-div">
+        <button class="show-hide-btn">Obj</button>
+        <ul class="notice-board" data-show-status="showing">
+          <li id="notice-obj-position">Pos: -</li>
+          <li id="notice-obj-rotation">Rot: -</li>
+          <li id="notice-obj-scale">Scl: -</li>
+        </ul>
+      </div>
+
       <button id="dev-tools-reset-btn">Reset</button>
     </div>
     <a-scene
@@ -31,88 +48,141 @@
       embedded
       arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3; cameraParametersUrl: https://raw.githack.com/AR-js-org/AR.js/master/data/data/camera_para.dat;"
     >
-      <a-marker preset="hiro" id="marker">
-        <a-box rotation="15 15 15" width="1" height="1" color="#FF0000"></a-box>
+      <a-marker id="marker" preset="hiro">
+        <a-box
+          id="obj"
+          rotation="15 15 15"
+          width="1"
+          height="1"
+          color="#FF0000"
+        ></a-box>
       </a-marker>
     </a-scene>
   </body>
   <script>
     let markerFound = false;
     const marker = document.querySelector("#marker");
+    const obj = document.querySelector("#obj");
+
     const devTools = document.querySelector("#dev-tools");
-    const devToolsShowHideBtn = document.querySelector("#dev-tools-show-hide-btn");
-    const noticeBoard = document.querySelector("#notice-board");
-    const noticeFoundMarker = document.querySelector("#notice-marker-found");
+    const devToolsShowHideBtn = document.querySelector(
+      "#dev-tools-show-hide-btn"
+    );
+    const markerShowHideBtn = document.querySelector(
+      `#notice-board-marker-show-hide-btn`
+    );
+    const markerNoticeBoard = document.querySelector(
+      `#notice-board-marker>.notice-board`
+    );
 
-    const noticeMarkerPosition = document.querySelector("#notice-marker-position");
-    const noticeMarkerRotation = document.querySelector("#notice-marker-rotation");
-    const noticeMarkerScale = document.querySelector("#notice-marker-scale");
+    // Misc Display
     const noticeFpsDisplay = document.querySelector("#notice-fps-display");
-    const noticeMisc = document.querySelector("#notice-misc")
+    const noticeFoundMarker = document.querySelector("#notice-marker-found");
+    // Marker Display
+    const noticeMarkerPosition = document.querySelector(
+      "#notice-marker-position"
+    );
+    const noticeMarkerRotation = document.querySelector(
+      "#notice-marker-rotation"
+    );
+    const noticeMarkerScale = document.querySelector("#notice-marker-scale");
+    // Obj Display
+    const noticeObjPosition = document.querySelector("#notice-obj-position");
+    const noticeObjRotation = document.querySelector("#notice-obj-rotation");
+    const noticeObjScale = document.querySelector("#notice-obj-scale");
 
-    
-    // Show Hide Button
-    devToolsShowHideBtn.addEventListener("click", ()=>{
-      const showingStatus = devTools.getAttribute("data-show-status")
-      if(showingStatus === "showing"){
-        devTools.setAttribute("data-show-status", "hidden")
-        devToolsShowHideBtn.textContent = "Show Dev Tools"
+    // Show Hide Button (DevTools)
+    devToolsShowHideBtn.addEventListener("click", () => {
+      const showingStatus = devTools.getAttribute("data-show-status");
+      if (showingStatus === "showing") {
+        devTools.setAttribute("data-show-status", "hidden");
+        devToolsShowHideBtn.textContent = "Show Dev Tools";
+      } else {
+        devTools.setAttribute("data-show-status", "showing");
+        devToolsShowHideBtn.textContent = "Hide Dev Tools";
       }
-      else {
-        devTools.setAttribute("data-show-status", "showing")
-        devToolsShowHideBtn.textContent = "Hide Dev Tools"
+    });
+    // Show Hide Button (Marker)
+    markerShowHideBtn.addEventListener("click", () => {
+      const showingStatus = markerNoticeBoard.getAttribute("data-show-status");
+      if (showingStatus === "showing") {
+        markerNoticeBoard.setAttribute("data-show-status", "hidden");
+      } else {
+        markerNoticeBoard.setAttribute("data-show-status", "showing");
       }
-    })
+    });
     // Marker Events
-    marker.addEventListener("markerFound", ()=>{
+    marker.addEventListener("markerFound", () => {
       updateMarkerData();
-      noticeFoundMarker.textContent = "Marker Found"
-      noticeFoundMarker.setAttribute('data-status', 'good')
+      noticeFoundMarker.textContent = "Marker Found";
+      noticeFoundMarker.setAttribute("data-status", "good");
       markerFound = true;
-    })
-    marker.addEventListener("markerLost", ()=>{
-      noticeFoundMarker.textContent = "Marker Lost"
-      noticeFoundMarker.setAttribute('data-status', 'bad')
+    });
+    marker.addEventListener("markerLost", () => {
+      noticeFoundMarker.textContent = "Marker Lost";
+      noticeFoundMarker.setAttribute("data-status", "bad");
       markerFound = false;
-    })
+    });
 
-    function updateMarkerData(){
-      if(!markerFound) return;
-      const {position, rotation, scale} = marker.object3D;
-      // Position
-      noticeMarkerPosition.textContent = `Pos: {x: ${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}, z: ${position.z.toFixed(2)}}`
-      // Rotation
-      const rotX = (rotation.x * 180 / Math.PI).toFixed(1);
-      const rotY = (rotation.y * 180 / Math.PI).toFixed(1);
-      const rotZ = (rotation.z * 180 / Math.PI).toFixed(1);
-      noticeMarkerRotation.textContent = `Rot: {x: ${rotX}°, y: ${rotY}°, z: ${rotZ}°}`;
-      // Scale
-      noticeMarkerScale.textContent = `Scl: {x: ${scale.x.toFixed(2)}, y: ${scale.y.toFixed(2)}, z: ${scale.z.toFixed(2)}}`
-      
+    function updateMarkerData() {
+      if (!markerFound) return;
+      // Marker Changes:
+      (() => {
+        const { position, rotation, scale } = marker.object3D;
+        // Position
+        noticeMarkerPosition.textContent = `Pos: {x: ${position.x.toFixed(
+          2
+        )}, y: ${position.y.toFixed(2)}, z: ${position.z.toFixed(2)}}`;
+        // Rotation
+        const rotX = ((rotation.x * 180) / Math.PI).toFixed(1);
+        const rotY = ((rotation.y * 180) / Math.PI).toFixed(1);
+        const rotZ = ((rotation.z * 180) / Math.PI).toFixed(1);
+        noticeMarkerRotation.textContent = `Rot: {x: ${rotX}°, y: ${rotY}°, z: ${rotZ}°}`;
+        // Scale
+        noticeMarkerScale.textContent = `Scl: {x: ${scale.x.toFixed(
+          2
+        )}, y: ${scale.y.toFixed(2)}, z: ${scale.z.toFixed(2)}}`;
+      })();
+      // Obj Changes:
+      (() => {
+        const { position, rotation, scale } = obj.object3D;
+        // Position
+        noticeObjPosition.textContent = `Pos: {x: ${position.x.toFixed(
+          2
+        )}, y: ${position.y.toFixed(2)}, z: ${position.z.toFixed(2)}}`;
+        // Rotation
+        const rotX = ((rotation.x * 180) / Math.PI).toFixed(1);
+        const rotY = ((rotation.y * 180) / Math.PI).toFixed(1);
+        const rotZ = ((rotation.z * 180) / Math.PI).toFixed(1);
+        noticeObjRotation.textContent = `Rot: {x: ${rotX}°, y: ${rotY}°, z: ${rotZ}°}`;
+        // Scale
+        noticeObjScale.textContent = `Scl: {x: ${scale.x.toFixed(
+          2
+        )}, y: ${scale.y.toFixed(2)}, z: ${scale.z.toFixed(2)}}`;
+      })();
     }
 
     // Create and Register Per Frame Updates
-    AFRAME.registerComponent('frame-updater', {
-      init: function(){
+    AFRAME.registerComponent("frame-updater", {
+      init: function () {
         this.frameCount = 0;
         this.lastTime = 0;
         this.fps = 0;
       },
-      tick: function(time, timeDelta) {
+      tick: function (time, timeDelta) {
         this.frameCount++;
         if (time - this.lastTime >= 1000) {
-          this.fps = Math.round(this.frameCount * 1000 / (time - this.lastTime));
+          this.fps = Math.round(
+            (this.frameCount * 1000) / (time - this.lastTime)
+          );
           this.frameCount = 0;
           this.lastTime = time;
           noticeFpsDisplay.textContent = `FPS: ${this.fps}`;
         }
-        if(markerFound){
-          updateMarkerData()
+        if (markerFound) {
+          updateMarkerData();
         }
-      }
-    })
-    
-
-
+      },
+    });
   </script>
 </html>
