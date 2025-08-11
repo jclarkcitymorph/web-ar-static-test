@@ -5,16 +5,21 @@
     <link rel="icon" type="image/svg+xml" href="/web-ar-static-test/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + TS</title>
-    <link rel="stylesheet" crossorigin href="/web-ar-static-test/assets/index-BIHDUb-e.css">
+    <link rel="stylesheet" crossorigin href="/web-ar-static-test/assets/index-BRRjvWS8.css">
   </head>
   <!-- A-Frame core -->
   <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
   <!-- AR.js for A-Frame (enables the `arjs` attribute, markers, etc.) -->
   <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
   <body>
-    <ul id="notice-board">
-      <li id="notice-marker-found">Marker Lost</li>
-    </ul>
+    <div id="dev-tools" data-show-status="showing">
+      <button id="dev-tools-show-hide-btn">Hide Dev Tools</button>
+      <ul id="notice-board">
+        <li id="notice-marker-found" data-status="bad">Marker Lost</li>
+        <li id="notice-marker-last-loc">Last Loc: -</li>
+      </ul>
+      <button id="dev-tools-reset-btn">Reset</button>
+    </div>
     <a-scene
       vr-mode-ui="enabled: false;"
       renderer="logarithmicDepthBuffer: true; precision: mediump; antialias: false;"
@@ -22,21 +27,41 @@
       arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3; cameraParametersUrl: https://raw.githack.com/AR-js-org/AR.js/master/data/data/camera_para.dat;"
     >
       <a-marker preset="hiro" id="marker">
-
+        <a-box rotation="15 15 15" color="#FF0000"></a-box>
       </a-marker>
     </a-scene>
   </body>
   <script>
-    const marker = document.querySelector("#marker")
+    const marker = document.querySelector("#marker");
+    const devTools = document.querySelector("#dev-tools");
+    const devToolsShowHideBtn = document.querySelector("#dev-tools-show-hide-btn");
     const noticeBoard = document.querySelector("#notice-board");
     const noticeFoundMarker = document.querySelector("#notice-marker-found");
 
-    if(marker){
+    console.log({marker, devTools, devToolsShowHideBtn, noticeBoard, noticeFoundMarker})
+
+    if(marker && devTools && devToolsShowHideBtn && noticeBoard && noticeFoundMarker){
+      // Show Hide Button
+      devToolsShowHideBtn.addEventListener("click", ()=>{
+        console.log("clicked")
+        const showingStatus = devTools.getAttribute("data-show-status")
+        if(showingStatus === "showing"){
+          devTools.setAttribute("data-show-status", "hidden")
+          devToolsShowHideBtn.textContent = "Show Dev Tools"
+        }
+        else {
+          devTools.setAttribute("data-show-status", "showing")
+          devToolsShowHideBtn.textContent = "Hide Dev Tools"
+        }
+      })
+      // Marker Events
       marker.addEventListener("markerFound", ()=>{
         noticeFoundMarker.textContent = "Marker Found"
+        noticeFoundMarker.setAttribute('data-status', 'good')
       })
       marker.addEventListener("markerLost", ()=>{
         noticeFoundMarker.textContent = "Marker Lost"
+        noticeFoundMarker.setAttribute('data-status', 'bad')
       })
     }
   </script>
