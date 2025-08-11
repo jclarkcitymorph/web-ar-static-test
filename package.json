@@ -5,13 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "deploy": "tsc && vite build && gh-pages -d dist"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.11",
     "tailwindcss": "^4.1.11",
     "typescript": "~5.8.3",
     "vite": "^7.1.0"
+  },
+  "dependencies": {
+    "gh-pages": "^6.3.0"
   }
 }
