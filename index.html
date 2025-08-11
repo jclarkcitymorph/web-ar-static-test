@@ -5,17 +5,17 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + TS</title>
-    <link rel="stylesheet" crossorigin href="/assets/index-DcCOimdJ.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-DBnkNS_w.css">
   </head>
   <!-- A-Frame core -->
-  <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+  <!-- <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script> -->
   <!-- AR.js for A-Frame (enables the `arjs` attribute, markers, etc.) -->
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-  <body class="bg-slate-700 m-0 overflow-hidden w-screen h-screen">
+  <!-- <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script> -->
+  <body class="bg-slate-700 overflow-hidden w-screen h-screen">
     <ul id="notice-board" class="absolute top-4 left-4 z-50 bg-red-300">
       <li id="notice-marker-found" class="notice-board-item">Marker Lost</li>
     </ul>
-    <a-scene
+    <!-- <a-scene
       class="w-full h-full"
       vr-mode-ui="enabled: false;"
       renderer="logarithmicDepthBuffer: true; precision: mediump; antialias: false;"
@@ -25,19 +25,20 @@
       <a-marker preset="hiro" id="marker">
 
       </a-marker>
-    </a-scene>
+    </a-scene> -->
   </body>
   <script>
     const marker = document.querySelector("#marker")
     const noticeBoard = document.querySelector("#notice-board");
     const noticeFoundMarker = document.querySelector("#notice-marker-found");
 
-    marker.addEventListener("markerFound", ()=>{
-      noticeFoundMarker.textContent = "Marker Found"
-    })
-    marker.addEventListener("markerLost", ()=>{
-      noticeFoundMarker.textContent = "Marker Lost"
-    })
-
+    if(marker){
+      marker.addEventListener("markerFound", ()=>{
+        noticeFoundMarker.textContent = "Marker Found"
+      })
+      marker.addEventListener("markerLost", ()=>{
+        noticeFoundMarker.textContent = "Marker Lost"
+      })
+    }
   </script>
 </html>
