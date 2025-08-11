@@ -61,8 +61,7 @@
         <a-box
           id="obj"
           rotation="15 15 15"
-          width="1"
-          height="1"
+          scale=".5 .5 .5"
           color="#FF0000"
         ></a-box>
       </a-marker>
@@ -165,8 +164,6 @@
       updateMarkerData();
       noticeFoundMarker.textContent = "Marker Found";
       noticeFoundMarker.setAttribute("data-status", "good");
-      s;
-      // camera.object3D.rotation.set(0, 0, 0)
       markerFound = true;
     });
     marker.addEventListener("markerLost", () => {
@@ -195,6 +192,10 @@
     function updateObjData() {
       if (!markerFound) return;
       const { position, rotation, scale } = obj.object3D;
+      rotation.x += 0.0375;
+      rotation.y += 0.005;
+      rotation.z += 0.065;
+
       // Position
       noticeObjPosition.textContent = `Pos: {x: ${position.x.toFixed(
         2
@@ -211,7 +212,6 @@
     }
     function updateCameraData() {
       const { position, rotation, scale } = camera.object3D;
-      console.log({ position, rotation, scale });
       noticeCameraPosition.textContent = `Pos: {x: ${position.x.toFixed(
         2
       )}, y: ${position.y.toFixed(2)}, z: ${position.z.toFixed(2)}}`;
@@ -231,7 +231,6 @@
         this.fps = 0;
       },
       tick: function (time, timeDelta) {
-        console.log("tick");
         this.frameCount++;
         if (time - this.lastTime >= 1000) {
           this.fps = Math.round(
