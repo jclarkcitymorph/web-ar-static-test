@@ -31,15 +31,13 @@
         </ul>
       </div>
       <div id="notice-board-obj" class="notice-board-div">
-        <button class="show-hide-btn">Obj</button>
+        <button id="notice-board-obj-show-hide-btn">Obj</button>
         <ul class="notice-board" data-show-status="showing">
           <li id="notice-obj-position">Pos: -</li>
           <li id="notice-obj-rotation">Rot: -</li>
           <li id="notice-obj-scale">Scl: -</li>
         </ul>
       </div>
-
-      <button id="dev-tools-reset-btn">Reset</button>
     </div>
     <a-scene
       frame-updater
@@ -71,8 +69,14 @@
     const markerShowHideBtn = document.querySelector(
       `#notice-board-marker-show-hide-btn`
     );
+    const objShowHideBtn = document.querySelector(
+      "#notice-board-obj-show-hide-btn"
+    );
     const markerNoticeBoard = document.querySelector(
       `#notice-board-marker>.notice-board`
+    );
+    const objNoticeBoard = document.querySelector(
+      `#notice-board-obj>.notice-board`
     );
 
     // Misc Display
@@ -105,12 +109,20 @@
     // Show Hide Button (Marker)
     markerShowHideBtn.addEventListener("click", () => {
       const showingStatus = markerNoticeBoard.getAttribute("data-show-status");
-      if (showingStatus === "showing") {
-        markerNoticeBoard.setAttribute("data-show-status", "hidden");
-      } else {
-        markerNoticeBoard.setAttribute("data-show-status", "showing");
-      }
+      markerNoticeBoard.setAttribute(
+        "data-show-status",
+        showingStatus === "showing" ? "hidden" : "showing"
+      );
     });
+    // Show Hid Button (Obj)
+    objShowHideBtn.addEventListener("click", () => {
+      const showingStatus = objNoticeBoard.getAttribute("data-show-status");
+      objNoticeBoard.setAttribute(
+        "data-show-status",
+        showingStatus === "showing" ? "hidden" : "showing"
+      );
+    });
+
     // Marker Events
     marker.addEventListener("markerFound", () => {
       updateMarkerData();
