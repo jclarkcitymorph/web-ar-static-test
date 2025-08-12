@@ -10,7 +10,10 @@
   <!-- A-Frame core -->
   <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
   <!-- AR.js for A-Frame (enables the `arjs` attribute, markers, etc.) -->
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+  <!-- HLS JS (enables video streaming) -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
   <body>
     <div id="dev-tools" data-show-status="showing">
       <button id="dev-tools-show-hide-btn">Hide Dev Tools</button>
@@ -57,14 +60,24 @@
       embedded
       arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3; cameraParametersUrl: https://raw.githack.com/AR-js-org/AR.js/master/data/data/camera_para.dat;"
     >
-      <a-marker id="marker" preset="hiro">
+      <a-nft
+        type="nft"
+        id="marker"
+        url="./citymorphbanner/citymorphbanner"
+        smooth="true"
+        smoothCount="10"
+        smoothTolerance=".01"
+        smoothThreshold="5"
+      >
         <a-box
           id="obj"
+          position="0 0 0"
           rotation="15 15 15"
           scale=".5 .5 .5"
           color="#FF0000"
         ></a-box>
-      </a-marker>
+      </a-nft>
+
       <a-entity
         camera
         position
@@ -72,7 +85,17 @@
         rotation
         look-controls="enabled:false"
         aframe-injected
-      ></a-entity>
+      >
+        <a-box
+          id="overlay-box"
+          position="2.5 0 -5"
+          rotation="0 0 0"
+          scale="0.5 0.5 0.5"
+          color="#00FFFF"
+          visible="true"
+          animation="property: rotation; to: 360 720 360; loop: true; dur: 5000"
+        ></a-box>
+      </a-entity>
       <a-entity light data-aframe-default-light aframe-injected></a-entity>
       <a-entity
         light
@@ -83,6 +106,12 @@
     </a-scene>
   </body>
   <script>
+    window.addEventListener("arjs-nft-loaded", (e) => {
+      console.log("NFT loaded:", e);
+    });
+
+    const twoPi = Math.PI * 2;
+
     let markerFound = false;
 
     const scene = document.querySelector("a-scene");
@@ -192,9 +221,14 @@
     function updateObjData() {
       if (!markerFound) return;
       const { position, rotation, scale } = obj.object3D;
+
       rotation.x += 0.0375;
       rotation.y += 0.005;
       rotation.z += 0.065;
+
+      rotation.x %= twoPi;
+      rotation.y %= twoPi;
+      rotation.z %= twoPi;
 
       // Position
       noticeObjPosition.textContent = `Pos: {x: ${position.x.toFixed(
