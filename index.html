@@ -244,19 +244,19 @@
         2
       )}, y: ${scale.y.toFixed(2)}, z: ${scale.z.toFixed(2)}}`;
     }
-    function updateCameraData() {
-      const { position, rotation, scale } = camera.object3D;
-      noticeCameraPosition.textContent = `Pos: {x: ${position.x.toFixed(
-        2
-      )}, y: ${position.y.toFixed(2)}, z: ${position.z.toFixed(2)}}`;
-      const rotX = ((rotation.x * 180) / Math.PI).toFixed(1);
-      const rotY = ((rotation.y * 180) / Math.PI).toFixed(1);
-      const rotZ = ((rotation.z * 180) / Math.PI).toFixed(1);
-      noticeCameraRotation.textContent = `Rot: {x: ${rotX}°, y: ${rotY}°, z: ${rotZ}°}`;
-      noticeCameraScale.textContent = `Scl: {x: ${scale.x.toFixed(
-        2
-      )}, y: ${scale.y.toFixed(2)}, z: ${scale.z.toFixed(2)}}`;
-    }
+    // function updateCameraData() {
+    //   const { position, rotation, scale } = camera.object3D;
+    //   noticeCameraPosition.textContent = `Pos: {x: ${position.x.toFixed(
+    //     2
+    //   )}, y: ${position.y.toFixed(2)}, z: ${position.z.toFixed(2)}}`;
+    //   const rotX = ((rotation.x * 180) / Math.PI).toFixed(1);
+    //   const rotY = ((rotation.y * 180) / Math.PI).toFixed(1);
+    //   const rotZ = ((rotation.z * 180) / Math.PI).toFixed(1);
+    //   noticeCameraRotation.textContent = `Rot: {x: ${rotX}°, y: ${rotY}°, z: ${rotZ}°}`;
+    //   noticeCameraScale.textContent = `Scl: {x: ${scale.x.toFixed(
+    //     2
+    //   )}, y: ${scale.y.toFixed(2)}, z: ${scale.z.toFixed(2)}}`;
+    // }
     // Create and Register Per Frame Updates
     AFRAME.registerComponent("frame-updater", {
       init: function () {
@@ -278,7 +278,7 @@
           updateMarkerData();
           updateObjData();
         }
-        updateCameraData();
+        // updateCameraData();
       },
     });
   </script>
